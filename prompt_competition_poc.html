@@ -8,15 +8,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0e0e10;
-    --bg2: #17171a;
-    --bg3: #1e1e22;
-    --border: rgba(255,255,255,0.08);
-    --border2: rgba(255,255,255,0.14);
-    --text: #f0ede8;
-    --muted: #8a8780;
-    --hint: #4a4845;
-    --accent: #d4ff5c;
+    --bg: #02072D;
+    --bg2: #3C405B;
+    --bg3: #2A2E4A;
+    --border: rgba(216,215,238,0.12);
+    --border2: rgba(216,215,238,0.22);
+    --text: #FFFFFF;
+    --muted: #D8D7EE;
+    --hint: #8B8AAE;
+    --accent: #00AB63;
     --accent2: #ff6b4a;
     --accent3: #4af0b4;
     --gold: #ffd166;
@@ -164,7 +164,7 @@
     margin-top: 16px;
     padding: 9px 18px;
     background: var(--accent);
-    color: #0e0e10;
+    color: #FFFFFF;
     border-radius: 8px;
     font-family: var(--body);
     font-size: 13px;
@@ -225,7 +225,7 @@
   }
   .form-hint { font-size: 11px; color: var(--hint); }
 
-  textarea, input[type="text"] {
+  textarea, input[type="text"], select {
     width: 100%;
     background: var(--bg2);
     border: 1px solid var(--border);
@@ -239,7 +239,18 @@
     transition: border-color 0.15s;
     resize: vertical;
   }
-  textarea:focus, input[type="text"]:focus { border-color: var(--accent); }
+  select {
+    resize: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B8AAE' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  select option { background: var(--bg2); color: var(--text); }
+  textarea:focus, input[type="text"]:focus, select:focus { border-color: var(--accent); }
   textarea::placeholder, input::placeholder { color: var(--hint); }
 
   .name-row {
@@ -253,7 +264,7 @@
     width: 100%;
     padding: 14px;
     background: var(--accent);
-    color: #0e0e10;
+    color: #FFFFFF;
     border: none;
     border-radius: 10px;
     font-family: var(--display);
@@ -351,7 +362,7 @@
     margin-bottom: 10px;
   }
   .grade-A { background: rgba(74,240,180,0.12); color: var(--accent3); }
-  .grade-B { background: rgba(212,255,92,0.12); color: var(--accent); }
+  .grade-B { background: rgba(0,171,99,0.15); color: var(--accent); }
   .grade-C { background: rgba(255,209,102,0.12); color: var(--gold); }
   .grade-D { background: rgba(255,107,74,0.12); color: var(--accent2); }
 
@@ -481,8 +492,8 @@
     font-size: 12px;
     color: var(--text);
     line-height: 1.7;
-    background: rgba(212,255,92,0.04);
-    border: 1px dashed rgba(212,255,92,0.2);
+    background: rgba(0,171,99,0.08);
+    border: 1px dashed rgba(0,171,99,0.3);
     border-radius: 8px;
     padding: 16px 18px;
     white-space: pre-wrap;
@@ -524,7 +535,7 @@
     vertical-align: middle;
   }
   .lb-table tr:last-child td { border-bottom: none; }
-  .lb-table tr.you td { background: rgba(212,255,92,0.03); }
+  .lb-table tr.you td { background: rgba(0,171,99,0.08); }
   .lb-row-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
   .rank-cell { font-family: var(--display); font-size: 15px; font-weight: 700; color: var(--hint); width: 36px; }
   .rank-1 { color: var(--gold); }
@@ -540,6 +551,34 @@
   .grade-cell { font-family: var(--mono); font-size: 11px; }
 
 
+
+  /* ── LEADERBOARD TABS ── */
+  .lb-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+  }
+  .lb-tab {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--hint);
+    background: transparent;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+  }
+  .lb-tab:hover { color: var(--muted); }
+  .lb-tab.active {
+    background: var(--bg2);
+    color: var(--accent);
+    border: 1px solid var(--border);
+  }
+  .weeks-played { font-family: var(--mono); font-size: 10px; color: var(--hint); }
 
   @media (max-width: 600px) {
     .workflow { grid-template-columns: 1fr; }
@@ -572,7 +611,7 @@
       <span class="starter-label">Starter</span>
       <span class="starter-text" id="starter-text">Help me prepare for my 1:1 with my manager tomorrow.</span>
     </div>
-    <a href="https://claude.ai" target="_blank" class="open-claude-btn">
+    <a id="open-claude-link" href="https://claude.ai" target="_blank" class="open-claude-btn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
       Open Claude
     </a>
@@ -601,11 +640,15 @@
   <div class="name-row">
     <div>
       <div class="form-label"><span class="form-label-text">Your name</span></div>
-      <input type="text" id="user-name" placeholder="e.g. Sarah K.">
+      <select id="user-name">
+        <option value="" disabled selected>Select your name...</option>
+      </select>
     </div>
     <div>
       <div class="form-label"><span class="form-label-text">Department</span></div>
-      <input type="text" id="user-dept" placeholder="e.g. Product, Sales, Engineering">
+      <select id="user-dept">
+        <option value="" disabled selected>Select department...</option>
+      </select>
     </div>
   </div>
 
@@ -688,8 +731,12 @@
   <!-- LEADERBOARD -->
   <div class="leaderboard-section">
     <div class="section-header">
-      <span class="section-title">This week's leaderboard</span>
-      <span class="section-sub">Updates as you score</span>
+      <span class="section-title">Leaderboard</span>
+      <div class="lb-tabs">
+        <button class="lb-tab active" data-view="weekly" onclick="switchLeaderboard('weekly')">This Week</button>
+        <button class="lb-tab" data-view="quarterly" onclick="switchLeaderboard('quarterly')">Quarterly</button>
+        <button class="lb-tab" data-view="alltime" onclick="switchLeaderboard('alltime')">All-Time</button>
+      </div>
     </div>
     <div class="lb-row-wrap">
       <table class="lb-table">
@@ -749,16 +796,45 @@ const CHALLENGE = {
   starter: "Help me prepare for my 1:1 with my manager tomorrow."
 };
 
-// ── STATE ────────────────────────────────────────────────────────────────────
-let submissions = JSON.parse(localStorage.getItem('pl_v2_subs') || '[]');
-
 // ── PROXY URL ────────────────────────────────────────────────────────────────
-// Replace this with your Railway / Azure / Render URL once deployed.
-// e.g. const PROXY_URL = 'https://prompt-league-proxy-production.up.railway.app/api/score';
 const PROXY_URL = '/api/score';
 
+// ── STATE ────────────────────────────────────────────────────────────────────
+let currentLeaderboardView = 'weekly';
+
 // ── INIT ─────────────────────────────────────────────────────────────────────
-renderLeaderboard();
+(async function init() {
+  // Set the Open Claude link with pre-filled starter prompt
+  const claudeLink = document.getElementById('open-claude-link');
+  claudeLink.href = 'https://claude.ai/new?q=' + encodeURIComponent(CHALLENGE.starter);
+
+  // Load dropdown options from server
+  try {
+    const res = await fetch('/api/config');
+    const config = await res.json();
+
+    const nameSelect = document.getElementById('user-name');
+    config.names.forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      nameSelect.appendChild(opt);
+    });
+
+    const deptSelect = document.getElementById('user-dept');
+    config.departments.forEach(dept => {
+      const opt = document.createElement('option');
+      opt.value = dept;
+      opt.textContent = dept;
+      deptSelect.appendChild(opt);
+    });
+  } catch (e) {
+    console.error('Failed to load config:', e);
+  }
+
+  // Load leaderboard from server
+  fetchLeaderboard('weekly');
+})();
 
 // ── CHAR COUNT ───────────────────────────────────────────────────────────────
 function updateCount() {
@@ -769,14 +845,14 @@ function updateCount() {
 async function submitPrompt() {
   const promptText  = document.getElementById('prompt-input').value.trim();
   const responseText = document.getElementById('response-input').value.trim();
-  const userName    = document.getElementById('user-name').value.trim();
-  const userDept    = document.getElementById('user-dept').value.trim();
+  const userName    = document.getElementById('user-name').value;
+  const userDept    = document.getElementById('user-dept').value;
   const errBox      = document.getElementById('error-box');
 
   errBox.classList.remove('visible');
 
-  
-  if (!userName) { showError('Enter your name before submitting.'); return; }
+  if (!userName) { showError('Select your name before submitting.'); return; }
+  if (!userDept) { showError('Select your department before submitting.'); return; }
   if (promptText.length < 20) { showError('Your prompt looks too short — write at least a sentence or two.'); return; }
 
   document.getElementById('submit-btn').disabled = true;
@@ -816,12 +892,23 @@ async function submitPrompt() {
     const raw = data.content?.find(b => b.type === 'text')?.text || '';
     const result = JSON.parse(raw.replace(/```json|```/g,'').trim());
 
-    const entry = { id: Date.now(), user: userName, dept: userDept || '—', week: CHALLENGE.week, prompt: promptText, result, ts: new Date().toISOString() };
-    submissions.push(entry);
-    localStorage.setItem('pl_v2_subs', JSON.stringify(submissions));
+    // Save to server database
+    await fetch('/api/submissions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user: userName,
+        dept: userDept || '—',
+        week: CHALLENGE.week,
+        season: CHALLENGE.season,
+        prompt: promptText,
+        response_text: responseText || null,
+        result
+      })
+    });
 
     renderScoreCard(result);
-    renderLeaderboard();
+    fetchLeaderboard(currentLeaderboardView);
 
   } catch(e) {
     clearInterval(ticker);
@@ -859,9 +946,9 @@ function renderScoreCard(r) {
   });
 
   document.getElementById('strengths-list').innerHTML = (r.strengths||[]).map(t =>
-    `<div class="feedback-item"><div class="feedback-dot dot-green"></div><span>${t}</span></div>`).join('');
+    `<div class="feedback-item"><div class="feedback-dot dot-green"></div><span>${esc(t)}</span></div>`).join('');
   document.getElementById('improvements-list').innerHTML = (r.improvements||[]).map(t =>
-    `<div class="feedback-item"><div class="feedback-dot dot-amber"></div><span>${t}</span></div>`).join('');
+    `<div class="feedback-item"><div class="feedback-dot dot-amber"></div><span>${esc(t)}</span></div>`).join('');
 
   document.getElementById('improved-prompt').textContent = r.improved_prompt;
   document.getElementById('score-card').classList.add('visible');
@@ -878,19 +965,35 @@ function copyImproved() {
   });
 }
 
-// ── LEADERBOARD ──────────────────────────────────────────────────────────────
-function renderLeaderboard() {
-  const weekSubs = submissions.filter(s => s.week === CHALLENGE.week);
-  const byUser = {};
-  weekSubs.forEach(s => {
-    if (!byUser[s.user] || s.result.total > byUser[s.user].total) {
-      byUser[s.user] = { user: s.user, dept: s.dept, total: s.result.total, grade: s.result.grade };
-    }
-  });
-  const ranked = Object.values(byUser).sort((a,b) => b.total - a.total);
-  const me = document.getElementById('user-name').value.trim();
+// ── HTML ESCAPE ──────────────────────────────────────────────────────────────
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
 
-  if (!ranked.length) {
+// ── LEADERBOARD ──────────────────────────────────────────────────────────────
+function switchLeaderboard(view) {
+  currentLeaderboardView = view;
+  document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.lb-tab[data-view="${view}"]`).classList.add('active');
+  fetchLeaderboard(view);
+}
+
+async function fetchLeaderboard(view) {
+  try {
+    const res = await fetch(`/api/leaderboard?view=${view}&week=${CHALLENGE.week}&season=${CHALLENGE.season}`);
+    const data = await res.json();
+    renderLeaderboard(data.rows, view);
+  } catch (e) {
+    console.error('Failed to fetch leaderboard:', e);
+  }
+}
+
+function renderLeaderboard(ranked, view) {
+  const me = document.getElementById('user-name').value;
+
+  if (!ranked || !ranked.length) {
     document.getElementById('lb-body').innerHTML =
       `<tr><td colspan="5" style="text-align:center;color:var(--hint);padding:28px;font-family:var(--mono);font-size:12px;">No submissions yet — be first.</td></tr>`;
     return;
@@ -899,8 +1002,8 @@ function renderLeaderboard() {
   document.getElementById('lb-body').innerHTML = ranked.map((r,i) => `
     <tr class="${r.user === me ? 'you' : ''}">
       <td class="rank-cell rank-${i+1}">${i+1}</td>
-      <td class="name-cell">${r.user}${r.user===me?' <span style="font-family:var(--mono);font-size:10px;color:var(--accent)">you</span>':''}</td>
-      <td class="dept-cell">${r.dept}</td>
+      <td class="name-cell">${esc(r.user)}${r.user===me?' <span style="font-family:var(--mono);font-size:10px;color:var(--accent)">you</span>':''}${view === 'alltime' && r.weeks_played ? ' <span class="weeks-played">(' + r.weeks_played + 'w)</span>' : ''}</td>
+      <td class="dept-cell">${esc(r.dept)}</td>
       <td class="score-cell grade-${r.grade}">${r.total}</td>
       <td class="grade-cell grade-${r.grade}">${r.grade}</td>
     </tr>`).join('');
