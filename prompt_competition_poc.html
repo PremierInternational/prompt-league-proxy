@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt League — Scorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e10;
+    --bg2: #17171a;
+    --bg3: #1e1e22;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #f0ede8;
+    --muted: #8a8780;
+    --hint: #4a4845;
+    --accent: #d4ff5c;
+    --accent2: #ff6b4a;
+    --accent3: #4af0b4;
+    --gold: #ffd166;
+    --display: 'Syne', sans-serif;
+    --body: 'Instrument Sans', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .app { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+  .logo {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .logo-mark {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .logo-mark span { color: var(--accent); }
+  .logo-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--hint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .week-chip {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 20px;
+  }
+
+  /* ── CHALLENGE BANNER ── */
+  .challenge-banner {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .challenge-banner::after {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.04;
+    pointer-events: none;
+  }
+  .challenge-eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .challenge-title {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+  .challenge-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+    max-width: 600px;
+    margin-bottom: 20px;
+  }
+  .starter-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .starter-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--hint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    padding-top: 1px;
+    min-width: 56px;
+  }
+  .starter-text {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    flex: 1;
+  }
+  .open-claude-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 16px;
+    padding: 9px 18px;
+    background: var(--accent);
+    color: #0e0e10;
+    border-radius: 8px;
+    font-family: var(--body);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .open-claude-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+  .open-claude-btn svg { width: 14px; height: 14px; }
+
+  /* ── WORKFLOW STEPS ── */
+  .workflow {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .workflow-step {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .step-num {
+    font-family: var(--display);
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--border2);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .step-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .step-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* ── SUBMISSION FORM ── */
+  .form-section { margin-bottom: 28px; }
+  .form-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .form-label-text {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .form-hint { font-size: 11px; color: var(--hint); }
+
+  textarea, input[type="text"] {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.65;
+    outline: none;
+    transition: border-color 0.15s;
+    resize: vertical;
+  }
+  textarea:focus, input[type="text"]:focus { border-color: var(--accent); }
+  textarea::placeholder, input::placeholder { color: var(--hint); }
+
+  .name-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: #0e0e10;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--display);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+    transition: opacity 0.15s, transform 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .submit-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* ── LOADING ── */
+  .loading-state {
+    display: none;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-top: 16px;
+  }
+  .loading-state.visible { display: flex; }
+  .spinner {
+    width: 18px; height: 18px;
+    border: 1.5px solid var(--border2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+  /* ── ERROR ── */
+  .error-box {
+    display: none;
+    padding: 12px 16px;
+    background: rgba(255,107,74,0.08);
+    border: 1px solid rgba(255,107,74,0.25);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--accent2);
+    margin-top: 12px;
+  }
+  .error-box.visible { display: block; }
+
+  /* ── SCORE CARD ── */
+  .score-card {
+    display: none;
+    margin-top: 32px;
+    animation: rise 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  .score-card.visible { display: block; }
+  @keyframes rise { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:none } }
+
+  .score-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px 16px 0 0;
+    padding: 28px 32px;
+    border-bottom: none;
+    flex-wrap: wrap;
+  }
+  .score-number {
+    font-family: var(--display);
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    min-width: 140px;
+  }
+  .score-number.grade-A { color: var(--accent3); }
+  .score-number.grade-B { color: var(--accent); }
+  .score-number.grade-C { color: var(--gold); }
+  .score-number.grade-D { color: var(--accent2); }
+
+  .score-meta { flex: 1; min-width: 200px; }
+  .grade-pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  .grade-A { background: rgba(74,240,180,0.12); color: var(--accent3); }
+  .grade-B { background: rgba(212,255,92,0.12); color: var(--accent); }
+  .grade-C { background: rgba(255,209,102,0.12); color: var(--gold); }
+  .grade-D { background: rgba(255,107,74,0.12); color: var(--accent2); }
+
+  .score-headline {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.5;
+    max-width: 380px;
+  }
+
+  /* ── DIMENSIONS ── */
+  .dims-row {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 1px;
+    background: var(--border);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+  .dim {
+    background: var(--bg2);
+    padding: 16px 18px;
+    text-align: center;
+  }
+  .dim-name {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--hint);
+    margin-bottom: 6px;
+  }
+  .dim-val {
+    font-family: var(--display);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .dim-bar-wrap {
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  .dim-bar { height: 100%; background: var(--accent); border-radius: 1px; transition: width 0.8s cubic-bezier(0.16,1,0.3,1); }
+
+  /* ── FEEDBACK PANELS ── */
+  .feedback-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+  .feedback-panel { background: var(--bg2); padding: 20px 22px; }
+  .panel-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  .panel-title.green { color: var(--accent3); }
+  .panel-title.amber { color: var(--gold); }
+  .feedback-item {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .feedback-item:last-child { border-bottom: none; }
+  .feedback-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+  .dot-green { background: var(--accent3); }
+  .dot-amber { background: var(--gold); }
+
+  /* ── IMPROVED PROMPT ── */
+  .improved-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 16px 16px;
+    padding: 22px 24px;
+  }
+  .improved-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .improved-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .copy-btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .improved-text {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.7;
+    background: rgba(212,255,92,0.04);
+    border: 1px dashed rgba(212,255,92,0.2);
+    border-radius: 8px;
+    padding: 16px 18px;
+    white-space: pre-wrap;
+  }
+
+  /* ── LEADERBOARD ── */
+  .leaderboard-section { margin-top: 56px; }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: var(--display);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .section-sub { font-size: 12px; color: var(--hint); }
+
+  .lb-table { width: 100%; border-collapse: collapse; }
+  .lb-table th {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--hint);
+    text-align: left;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+  .lb-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  .lb-table tr:last-child td { border-bottom: none; }
+  .lb-table tr.you td { background: rgba(212,255,92,0.03); }
+  .lb-row-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .rank-cell { font-family: var(--display); font-size: 15px; font-weight: 700; color: var(--hint); width: 36px; }
+  .rank-1 { color: var(--gold); }
+  .rank-2 { color: var(--muted); }
+  .rank-3 { color: #cd7f32; }
+  .name-cell { font-weight: 500; color: var(--text); }
+  .dept-cell { font-size: 11px; color: var(--hint); }
+  .score-cell { font-family: var(--display); font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+  .score-cell.grade-A { color: var(--accent3); }
+  .score-cell.grade-B { color: var(--accent); }
+  .score-cell.grade-C { color: var(--gold); }
+  .score-cell.grade-D { color: var(--accent2); }
+  .grade-cell { font-family: var(--mono); font-size: 11px; }
+
+
+
+  @media (max-width: 600px) {
+    .workflow { grid-template-columns: 1fr; }
+    .name-row { grid-template-columns: 1fr; }
+    .dims-row { grid-template-columns: repeat(2,1fr); }
+    .feedback-row { grid-template-columns: 1fr; }
+    .score-top { flex-direction: column; }
+    .score-number { font-size: 56px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-mark">Prompt<span>League</span></div>
+      <div class="logo-tag">Scorer</div>
+    </div>
+    <div class="week-chip" id="week-chip">Week 1 · Season 1</div>
+  </header>
+
+  <!-- CHALLENGE BANNER -->
+  <div class="challenge-banner">
+    <div class="challenge-eyebrow" id="challenge-eyebrow">Week 1 Challenge · Prompt Engineering</div>
+    <div class="challenge-title" id="challenge-title">Prepare for your 1:1</div>
+    <div class="challenge-desc" id="challenge-desc">Your weekly 1:1 with your manager is tomorrow. Use Claude to help you prepare — covering what to update them on, what blockers to raise, and how to make the most of the 30 minutes.</div>
+    <div class="starter-row">
+      <span class="starter-label">Starter</span>
+      <span class="starter-text" id="starter-text">Help me prepare for my 1:1 with my manager tomorrow.</span>
+    </div>
+    <a href="https://claude.ai" target="_blank" class="open-claude-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Open Claude
+    </a>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="workflow">
+    <div class="workflow-step">
+      <div class="step-num">01</div>
+      <div class="step-title">Try the challenge in Claude</div>
+      <div class="step-desc">Click "Open Claude" above. Write your best version of the prompt and see how Claude responds.</div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-num">02</div>
+      <div class="step-title">Paste your prompt below</div>
+      <div class="step-desc">Copy the prompt you used in Claude and paste it into the submission box. Optionally include Claude's response too.</div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-num">03</div>
+      <div class="step-title">Get scored instantly</div>
+      <div class="step-desc">You'll get a score out of 100 with specific coaching and a rewritten version showing what a 90+ prompt looks like.</div>
+    </div>
+  </div>
+
+  <!-- SUBMISSION FORM -->
+  <div class="name-row">
+    <div>
+      <div class="form-label"><span class="form-label-text">Your name</span></div>
+      <input type="text" id="user-name" placeholder="e.g. Sarah K.">
+    </div>
+    <div>
+      <div class="form-label"><span class="form-label-text">Department</span></div>
+      <input type="text" id="user-dept" placeholder="e.g. Product, Sales, Engineering">
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="form-label">
+      <span class="form-label-text">Your prompt (what you typed into Claude)</span>
+      <span class="form-hint" id="char-count">0 chars</span>
+    </div>
+    <textarea id="prompt-input" rows="5" placeholder="Paste the prompt you used in Claude here. Try to beat the starter — add context about your role, your manager's style, what you've been working on, what output format you want..." oninput="updateCount()"></textarea>
+  </div>
+
+  <div class="form-section">
+    <div class="form-label">
+      <span class="form-label-text">Claude's response <span style="color:var(--hint);font-size:11px;font-style:italic;">(optional but improves scoring)</span></span>
+    </div>
+    <textarea id="response-input" rows="4" placeholder="Optionally paste Claude's response here — this lets the scorer evaluate whether your prompt produced a great output, not just whether it was well-written."></textarea>
+  </div>
+
+  <button class="submit-btn" id="submit-btn" onclick="submitPrompt()">
+    Score my prompt
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+  </button>
+
+  <div class="loading-state" id="loading-state">
+    <div class="spinner"></div>
+    <span class="loading-text" id="loading-msg">Sending to Claude for scoring...</span>
+  </div>
+  <div class="error-box" id="error-box"></div>
+
+  <!-- SCORE RESULT -->
+  <div class="score-card" id="score-card">
+    <div class="score-top">
+      <div class="score-number" id="result-number">—</div>
+      <div class="score-meta">
+        <div class="grade-pill" id="result-grade-pill">—</div>
+        <div class="score-headline" id="result-headline"></div>
+      </div>
+    </div>
+    <div class="dims-row">
+      <div class="dim">
+        <div class="dim-name">Clarity</div>
+        <div class="dim-val" id="dim-clarity">—</div>
+        <div class="dim-bar-wrap"><div class="dim-bar" id="bar-clarity" style="width:0%"></div></div>
+      </div>
+      <div class="dim">
+        <div class="dim-name">Context</div>
+        <div class="dim-val" id="dim-context">—</div>
+        <div class="dim-bar-wrap"><div class="dim-bar" id="bar-context" style="width:0%"></div></div>
+      </div>
+      <div class="dim">
+        <div class="dim-name">Specificity</div>
+        <div class="dim-val" id="dim-specificity">—</div>
+        <div class="dim-bar-wrap"><div class="dim-bar" id="bar-specificity" style="width:0%"></div></div>
+      </div>
+      <div class="dim">
+        <div class="dim-name">Technique</div>
+        <div class="dim-val" id="dim-technique">—</div>
+        <div class="dim-bar-wrap"><div class="dim-bar" id="bar-technique" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="feedback-row">
+      <div class="feedback-panel">
+        <div class="panel-title green">What worked</div>
+        <div id="strengths-list"></div>
+      </div>
+      <div class="feedback-panel">
+        <div class="panel-title amber">How to improve</div>
+        <div id="improvements-list"></div>
+      </div>
+    </div>
+    <div class="improved-section">
+      <div class="improved-header">
+        <span class="improved-label">90+ version of your prompt</span>
+        <button class="copy-btn" onclick="copyImproved()">Copy</button>
+      </div>
+      <div class="improved-text" id="improved-prompt"></div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div class="leaderboard-section">
+    <div class="section-header">
+      <span class="section-title">This week's leaderboard</span>
+      <span class="section-sub">Updates as you score</span>
+    </div>
+    <div class="lb-row-wrap">
+      <table class="lb-table">
+        <thead>
+          <tr>
+            <th style="width:36px">#</th>
+            <th>Name</th>
+            <th>Dept</th>
+            <th>Score</th>
+            <th>Grade</th>
+          </tr>
+        </thead>
+        <tbody id="lb-body">
+          <tr><td colspan="5" style="text-align:center;color:var(--hint);padding:28px;font-family:var(--mono);font-size:12px;">No submissions yet — be first.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── RUBRIC ───────────────────────────────────────────────────────────────────
+const RUBRIC = `You are an expert prompt engineering judge for a company-wide learning competition. Evaluate the quality of the submitted prompt and return structured, encouraging feedback.
+
+SCORING RUBRIC (100 pts total):
+
+1. Clarity (0–25): Is the ask unambiguous? Could Claude misinterpret what's being requested?
+   20-25: crystal clear | 10-19: some ambiguity | 0-9: vague or confusing
+
+2. Context (0–25): Did they give Claude relevant background — their role, situation, constraints, what they've tried?
+   20-25: rich context that shapes the response | 10-19: some context | 0-9: no meaningful context
+
+3. Specificity (0–25): Did they define desired output format, length, tone, audience?
+   20-25: clear output definition | 10-19: partially specified | 0-9: no output guidance
+
+4. Technique (0–25): Role-setting, examples (few-shot), chain-of-thought, asking Claude to ask clarifying questions, iteration?
+   20-25: two+ techniques | 10-19: one technique | 0-9: plain question only
+
+If a Claude response is provided, also consider whether the prompt actually produced a high-quality, useful response — and factor this into your scores.
+
+Respond ONLY with valid JSON. No preamble, no markdown fences.
+{
+  "scores": { "clarity": <0-25>, "context": <0-25>, "specificity": <0-25>, "technique": <0-25> },
+  "total": <0-100>,
+  "grade": <"A"|"B"|"C"|"D">,
+  "headline": <one sentence max 15 words>,
+  "strengths": [<string>, <string>],
+  "improvements": [<string>, <string>],
+  "improved_prompt": <rewritten version scoring 90+, max 120 words>
+}`;
+
+const CHALLENGE = {
+  week: 1, season: 1,
+  title: "Prepare for your 1:1",
+  desc: "Your weekly 1:1 with your manager is tomorrow. Use Claude to help you prepare — covering what to update them on, what blockers to raise, and how to make the most of the 30 minutes.",
+  starter: "Help me prepare for my 1:1 with my manager tomorrow."
+};
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let submissions = JSON.parse(localStorage.getItem('pl_v2_subs') || '[]');
+
+// ── PROXY URL ────────────────────────────────────────────────────────────────
+// Replace this with your Railway / Azure / Render URL once deployed.
+// e.g. const PROXY_URL = 'https://prompt-league-proxy-production.up.railway.app/api/score';
+const PROXY_URL = '/api/score';
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+renderLeaderboard();
+
+// ── CHAR COUNT ───────────────────────────────────────────────────────────────
+function updateCount() {
+  document.getElementById('char-count').textContent = document.getElementById('prompt-input').value.length + ' chars';
+}
+
+// ── SCORING ──────────────────────────────────────────────────────────────────
+async function submitPrompt() {
+  const promptText  = document.getElementById('prompt-input').value.trim();
+  const responseText = document.getElementById('response-input').value.trim();
+  const userName    = document.getElementById('user-name').value.trim();
+  const userDept    = document.getElementById('user-dept').value.trim();
+  const errBox      = document.getElementById('error-box');
+
+  errBox.classList.remove('visible');
+
+  
+  if (!userName) { showError('Enter your name before submitting.'); return; }
+  if (promptText.length < 20) { showError('Your prompt looks too short — write at least a sentence or two.'); return; }
+
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('loading-state').classList.add('visible');
+  document.getElementById('score-card').classList.remove('visible');
+
+  const msgs = ['Sending to Claude for scoring...','Evaluating clarity and context...','Checking technique and specificity...','Generating your coaching feedback...'];
+  let mi = 0;
+  const msgEl = document.getElementById('loading-msg');
+  const ticker = setInterval(() => { mi = (mi+1) % msgs.length; msgEl.textContent = msgs[mi]; }, 1800);
+
+  const userMsg = responseText
+    ? `Challenge: "${CHALLENGE.title}" — ${CHALLENGE.desc}\n\nSubmitted prompt:\n${promptText}\n\nClaude's response to this prompt:\n${responseText}`
+    : `Challenge: "${CHALLENGE.title}" — ${CHALLENGE.desc}\n\nSubmitted prompt:\n${promptText}`;
+
+  try {
+    const res = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: RUBRIC,
+        messages: [{ role: 'user', content: userMsg }]
+      })
+    });
+
+    clearInterval(ticker);
+    document.getElementById('loading-state').classList.remove('visible');
+
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({}));
+      throw new Error(e?.error?.message || `API error ${res.status}`);
+    }
+
+    const data = await res.json();
+    const raw = data.content?.find(b => b.type === 'text')?.text || '';
+    const result = JSON.parse(raw.replace(/```json|```/g,'').trim());
+
+    const entry = { id: Date.now(), user: userName, dept: userDept || '—', week: CHALLENGE.week, prompt: promptText, result, ts: new Date().toISOString() };
+    submissions.push(entry);
+    localStorage.setItem('pl_v2_subs', JSON.stringify(submissions));
+
+    renderScoreCard(result);
+    renderLeaderboard();
+
+  } catch(e) {
+    clearInterval(ticker);
+    document.getElementById('loading-state').classList.remove('visible');
+    document.getElementById('submit-btn').disabled = false;
+
+    if (e.message?.includes('401')) showError('Authentication error — check the API key is set correctly on the server.');
+    else if (e.message?.includes('429')) showError('Rate limit hit — wait a moment and try again.');
+    else showError('Scoring failed: ' + (e.message || 'Check your API key and network, then try again.'));
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-box');
+  el.textContent = msg;
+  el.classList.add('visible');
+}
+
+// ── SCORE CARD ───────────────────────────────────────────────────────────────
+function renderScoreCard(r) {
+  const s = r.scores;
+  const numEl = document.getElementById('result-number');
+  numEl.textContent = r.total;
+  numEl.className = 'score-number grade-' + r.grade;
+
+  const pill = document.getElementById('result-grade-pill');
+  pill.textContent = 'Grade ' + r.grade;
+  pill.className = 'grade-pill grade-' + r.grade;
+
+  document.getElementById('result-headline').textContent = r.headline;
+
+  ['clarity','context','specificity','technique'].forEach(d => {
+    document.getElementById('dim-'+d).textContent = s[d];
+    setTimeout(() => document.getElementById('bar-'+d).style.width = (s[d]/25*100)+'%', 120);
+  });
+
+  document.getElementById('strengths-list').innerHTML = (r.strengths||[]).map(t =>
+    `<div class="feedback-item"><div class="feedback-dot dot-green"></div><span>${t}</span></div>`).join('');
+  document.getElementById('improvements-list').innerHTML = (r.improvements||[]).map(t =>
+    `<div class="feedback-item"><div class="feedback-dot dot-amber"></div><span>${t}</span></div>`).join('');
+
+  document.getElementById('improved-prompt').textContent = r.improved_prompt;
+  document.getElementById('score-card').classList.add('visible');
+  document.getElementById('submit-btn').disabled = false;
+  document.getElementById('score-card').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function copyImproved() {
+  const text = document.getElementById('improved-prompt').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// ── LEADERBOARD ──────────────────────────────────────────────────────────────
+function renderLeaderboard() {
+  const weekSubs = submissions.filter(s => s.week === CHALLENGE.week);
+  const byUser = {};
+  weekSubs.forEach(s => {
+    if (!byUser[s.user] || s.result.total > byUser[s.user].total) {
+      byUser[s.user] = { user: s.user, dept: s.dept, total: s.result.total, grade: s.result.grade };
+    }
+  });
+  const ranked = Object.values(byUser).sort((a,b) => b.total - a.total);
+  const me = document.getElementById('user-name').value.trim();
+
+  if (!ranked.length) {
+    document.getElementById('lb-body').innerHTML =
+      `<tr><td colspan="5" style="text-align:center;color:var(--hint);padding:28px;font-family:var(--mono);font-size:12px;">No submissions yet — be first.</td></tr>`;
+    return;
+  }
+
+  document.getElementById('lb-body').innerHTML = ranked.map((r,i) => `
+    <tr class="${r.user === me ? 'you' : ''}">
+      <td class="rank-cell rank-${i+1}">${i+1}</td>
+      <td class="name-cell">${r.user}${r.user===me?' <span style="font-family:var(--mono);font-size:10px;color:var(--accent)">you</span>':''}</td>
+      <td class="dept-cell">${r.dept}</td>
+      <td class="score-cell grade-${r.grade}">${r.total}</td>
+      <td class="grade-cell grade-${r.grade}">${r.grade}</td>
+    </tr>`).join('');
+}
+</script>
+</body>
+</html>
