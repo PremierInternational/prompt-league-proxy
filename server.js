@@ -60,22 +60,40 @@ db.exec(`
 // ── Config: names and departments for dropdowns ──────────────────────────────
 const CONFIG = {
   names: [
-    "Alex B.", "Amanda C.", "Andrew H.", "Angela M.", "Ben T.",
-    "Beth R.", "Brian K.", "Carlos D.", "Catherine L.", "Chris W.",
-    "Dan F.", "Diana P.", "Emily S.", "Eric J.", "Grace N.",
-    "Hannah Z.", "Jack M.", "James O.", "Jennifer A.", "Jessica K.",
-    "John D.", "Karen W.", "Kate R.", "Kevin L.", "Laura B.",
-    "Lisa H.", "Mark T.", "Matt S.", "Megan C.", "Michael P.",
-    "Michelle G.", "Nick V.", "Olivia F.", "Patrick N.", "Rachel E.",
-    "Rebecca D.", "Ryan M.", "Sam W.", "Sarah K.", "Steve J.",
-    "Tom A.", "Tyler B.", "Victoria L."
+    "Abhiram Donakonda", "Adam Hume", "Aditi Shah", "Akshay Deshmukh",
+    "Alice Linesch", "Aman Chauhan", "Anand Kumar", "Andrew Feightner",
+    "Anlet Arrapura", "Ashritha Rao", "Atishay Kumar", "Audrey Artis",
+    "Becky Song", "Bhelcy Nadar", "Bob Peterson", "Brad Gamm",
+    "Brad Hagstrom", "Brandon Leslie", "Carolyn Dwyer", "Celina Lawrence",
+    "Chanda Tanwani", "ChanMye MyintThu", "Claire Westenberger",
+    "Conner Knepley", "Courtney Krishnan", "Craig Wood", "Dan Lyons",
+    "Dana Neis", "Daniel McCarthy", "Deepa Borkar", "Dennis Gray",
+    "Devika Unnikrishnan", "Dhairya Gandhi", "Dhwani Shah", "Don Brown",
+    "Emma Creek", "Eswari Konduru", "Franko Naik", "Fyzia Shaik",
+    "Grace Fisher", "Hemanth Kumar", "Jack Jansen", "Jatin Bhoir",
+    "Jesse Kampa", "Jim Quiniff", "John Coode", "John Kesler",
+    "Jonathan Garcia", "Julie May", "Jyoti Rathod", "Kathleen Flavin",
+    "Kerry Glass", "KiranKumar Beeram", "Krishna Patel", "Kunal Sharma",
+    "Lovette Sampson-Baptiste", "Luke Sherer", "Mahadev Kalisetty",
+    "Mahalaxmi Chinchani", "Mahesh Sarvepalli", "Marcus Bland",
+    "Mazher Ulhaq", "Mellam Teja", "Mike Mulhern", "Mikel Naples",
+    "Millie Rolander", "Mitch Hunter", "Mohamed Husein",
+    "Mohammad Baseet", "Natalie Crow", "Natalie Knight", "Natalie Salinas",
+    "Nick Guzman", "Nick Virgilio", "Owen Veranth", "Paola Saibene",
+    "Parker Franscella", "Patrick Crowe", "Paul Tran", "Praneetha Maddimsetti",
+    "Pratham Mali", "Praveen Edulakanti", "Rachel Kull",
+    "Ramandeep Malhotra", "Ramesh Radha", "Rekha Mavuluri",
+    "Rishabh Shrotriya", "Rohan Saha", "Ryan Lee", "Samantha Sailer",
+    "Sandhya Kumari Kada", "Sanjay Sreenivas Siginam", "Sarah McCusker",
+    "Savio Vegnesa", "Shabana Ansari", "Shane Supple", "Sowmya Bysani",
+    "Sriman Ura", "Steve Novak", "SubbaRajani Kristam", "Sumanth Kalagutla",
+    "Suresh Saragadam", "Tom Morely", "Ursula Price", "Vamsi Krishna",
+    "Varun Kandukuri", "Vekatesan Reddy", "Venkata Adusumalli",
+    "Zachary Ahrens"
   ],
   departments: [
-    "Accounting", "Business Development", "Customer Success",
-    "Data & Analytics", "Design", "Engineering", "Executive",
-    "Finance", "HR & People Ops", "IT", "Legal", "Marketing",
-    "Operations", "Product", "Project Management", "QA",
-    "Sales", "Security", "Support"
+    "Consulting", "Finance", "Human Resources", "Officers",
+    "Sales & Marketing", "Technology"
   ]
 };
 
